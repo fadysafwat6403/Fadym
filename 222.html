@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fady & Marell</title>
+    <style>
+        body {
+            background-color: pink;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #question-screen, #kiss-screen, #message-screen {
+            display: none;
+            text-align: center;
+        }
+
+        #question-screen.active, #kiss-screen.active, #message-screen.active {
+            display: block;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 40px;
+            animation: float 5s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-100px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        #message-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- First Screen: Who Are You? -->
+    <div id="question-screen" class="active">
+        <h1>Who are you?</h1>
+        <button onclick="selectUser('Fady')">Fady</button>
+        <button onclick="selectUser('Marell')">Marell</button>
+    </div>
+
+    <!-- Second Screen: Marell's Message -->
+    <div id="message-screen">
+        <div id="message-box">
+            <p>لو انت فتحتى دا دلوقتى ف دا معناه انى ناجح وتقريبا كده طلعت واد عبقرى زى ما ماما بتقولى، المهم ان كعادتى انى اشارك معاكى حياتى ودايما تبقى اول حاجه فى حياتى ف حبيت انك تكونى اول تجربه ليه واقولك بحبك بطريقه جديده ومختلفه</p>
+        </div>
+        <button onclick="skipMessage()">وانا كمان بحبك</button>
+    </div>
+
+    <!-- Third Screen: Send Kiss -->
+    <div id="kiss-screen">
+        <h1>Send your partner a kiss</h1>
+        <button id="kiss-button" onclick="sendKiss()">Send your partner a kiss</button>
+        <p id="fady-counter">Fady's Kisses Sent: 0</p>
+        <p id="marell-counter">Marell's Kisses Sent: 0</p>
+    </div>
+
+    <!-- More Floating Hearts (Heart Emoji) -->
+    <div class="heart" style="top: 10%; left: 20%;">❤️</div>
+    <div class="heart" style="top: 30%; left: 70%;">❤️</div>
+    <div class="heart" style="top: 50%; left: 50%;">❤️</div>
+    <div class="heart" style="top: 80%; left: 30%;">❤️</div>
+    <div class="heart" style="top: 15%; left: 45%;">❤️</div>
+    <div class="heart" style="top: 60%; left: 60%;">❤️</div>
+    <div class="heart" style="top: 40%; left: 15%;">❤️</div>
+    <div class="heart" style="top: 75%; left: 80%;">❤️</div>
+    <div class="heart" style="top: 90%; left: 10%;">❤️</div>
+
+    <script>
+        let currentUser = '';
+        let fadyKissCounter = localStorage.getItem('fadyKissCounter') || 0;
+        let marellKissCounter = localStorage.getItem('marellKissCounter') || 0;
+
+        document.getElementById('fady-counter').innerText = "Fady's Kisses Sent: " + fadyKissCounter;
+        document.getElementById('marell-counter').innerText = "Marell's Kisses Sent: " + marellKissCounter;
+
+        function selectUser(user) {
+            currentUser = user;
+            document.getElementById('question-screen').classList.remove('active');
+            if (user === 'Marell') {
+                document.getElementById('message-screen').classList.add('active');
+            } else {
+                document.getElementById('kiss-screen').classList.add('active');
+            }
+        }
+
+        function skipMessage() {
+            document.getElementById('message-screen').classList.remove('active');
+            document.getElementById('kiss-screen').classList.add('active');
+        }
+
+        function sendKiss() {
+            if (currentUser === 'Fady') {
+                fadyKissCounter++;
+                localStorage.setItem('fadyKissCounter', fadyKissCounter);
+                document.getElementById('fady-counter').innerText = "Fady's Kisses Sent: " + fadyKissCounter;
+                sendNotification('Fady sent you a kiss!');
+            } else if (currentUser === 'Marell') {
+                marellKissCounter++;
+                localStorage.setItem('marellKissCounter', marellKissCounter);
+                document.getElementById('marell-counter').innerText = "Marell's Kisses Sent: " + marellKissCounter;
+                sendNotification('Marell sent you a kiss!');
+            }
+        }
+
+        function sendNotification(message) {
+            if (Notification.permission === 'granted') {
+                new Notification(message);
+            }
+        }
+
+        // Request notification permission on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Notification.permission !== 'granted') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        console.log('Notifications granted.');
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
